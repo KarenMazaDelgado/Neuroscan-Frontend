@@ -68,25 +68,3 @@ The application uses a **three-part architecture** for robust deployment and sca
 
 ---
 
-##  Current Status and Handoff Note
-
-The system architecture is fully defined and the code has been updated to handle common connection errors.
-
-### Gradio Backend (KarenMaza/neuroscan-backend)
-
-* **URL:** `https://karenmaza-neuroscan-backend.hf.space`
-* **Status:** Running with the latest `app.py` code, which includes **server-side file-renaming** as a robust fix against generic file names (`/blob`).
-
-### Remaining Issue: Connection Failure
-
-When running locally, the application is still sporadically encountering the error:
-
-> **"Model Error: Failed to construct 'URL': Invalid URL"**
-
-**Hypothesis:** This error indicates the Next.js rewrite proxy is failing to connect to the Hugging Face Space URL. Since the configuration is correct, the issue is likely due to:
-1.  **Local Environment/Firewall:** A machine-specific network setting or firewall blocking the proxy request.
-2.  **Next.js Server Cache:** The server did not load the final `next.config.js` correctly, despite restarts.
-
-**Next Step for Handoff:**
-* Verify the project successfully runs when deployed on Vercel (eliminating local network issues).
-* Investigate the network path and firewall settings if the local error persists.
