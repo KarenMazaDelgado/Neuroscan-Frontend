@@ -74,9 +74,9 @@ export default function NiftiViewer({ scanData, heatmapData, predictedClass, con
         heatmap.colormap = 'warm';
         heatmap.opacity = 1.0;  // Full opacity for visibility
 
-        // Threshold the heatmap to only show high-attention regions (top 20%)
+        // Threshold the heatmap to only show high-attention regions (top 15%)
         if (heatmap.global_max !== undefined) {
-          const threshold = heatmap.global_max * 0.2;
+          const threshold = heatmap.global_max * 0.15;
           heatmap.cal_min = threshold;
           heatmap.cal_max = heatmap.global_max;
 
