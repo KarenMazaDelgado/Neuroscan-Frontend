@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@gradio/client": "^2.0.0",
+    "@niivue/niivue": "^0.65.0",
     "lucide-react": "^0.555.0",
     "next": "16.0.5",
     "react": "19.2.0",

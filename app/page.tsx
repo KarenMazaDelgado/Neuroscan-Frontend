@@ -2,14 +2,28 @@
 import { useState, useEffect } from 'react';
 import { client } from "@gradio/client";
 import { Upload, Activity, AlertCircle, CheckCircle2, ChevronRight, ShieldAlert, HeartPulse, Brain, Download, Database } from 'lucide-react';
+import dynamic from 'next/dynamic';
+
+// Dynamically import NiftiViewer to avoid SSR issues
+const NiftiViewer = dynamic(() => import('./components/NiftiViewer'), { ssr: false });
 
 // Use the local Next.js proxy rewrite path
 // DEFINED ONCE AT COMPONENT SCOPE
-const HF_SPACE_URL = "https://ai4all3dcnn-neuroscan-backend.hf.space";
+// const HF_SPACE_URL = "https://ai4all3dcnn-neuroscan-backend.hf.space";
+const HF_SPACE_URL = "https://cooleschimo-neuroscan-backend.hf.space";
+// const HF_SPACE_URL = "http://127.0.0.1:7860";  // Local backend (only for local dev)
+
+interface AnalysisResult {
+  predictions: [string, number][];
+  scan_data: string | null;
+  heatmap_data: string | null;
+  predicted_class: string;
+  confidence: number;
+}
 
 export default function Home() {
     const [file, setFile] = useState<File | null>(null);
-    const [result, setResult] = useState<any>(null);
+    const [result, setResult] = useState<AnalysisResult | null>(null);
     const [loading, setLoading] = useState(false);
     const [scrolled, setScrolled] = useState(false);
 
@@ -27,39 +41,30 @@ export default function Home() {
 
         try {
             const app = await client(HF_SPACE_URL);
-            console.log("Gradio client initialized."); 
+            console.log("Gradio client initialized.");
 
             const response = await app.predict("/predict", [file]) as any;
-            
+
             // DEBUG: Log the entire response to see what we're getting
             console.log("Full response:", JSON.stringify(response, null, 2));
             console.log("response.data:", response.data);
             console.log("response.data[0]:", response.data?.[0]);
-            
-            // Add runtime check to ensure we have valid data
-            if (!response?.data?.[0] || !Array.isArray(response.data[0].data)) {
+
+            // The new backend returns a JSON object
+            if (!response?.data?.[0]) {
                 throw new Error("Invalid response format from model");
             }
-            
-            const predictionList = response.data[0].data;
-            
-            // Use a traditional loop instead of reduce to avoid TypeScript issues
-            const predictionData: { [key: string]: number } = {};
-            for (const item of predictionList) {
-                if (Array.isArray(item) && item.length === 2) {
-                    const [label, confidence] = item;
-                    predictionData[label as string] = confidence as number;
-                }
-            }
-            
-            setResult(predictionData);
-            console.log("Prediction successful:", predictionData); 
 
-        } catch (error: any) { 
+            const analysisResult: AnalysisResult = response.data[0];
+
+            setResult(analysisResult);
+            console.log("Prediction successful:", analysisResult);
+
+        } catch (error: any) {
             console.error("Error during NeuroScan prediction:", error);
-            
+
             let errorMessage = "Something went wrong connecting to the model. Check the console for details.";
-            
+
             if (error instanceof Error && error.message) {
                 if (error.message.includes("fetch") || error.message.includes("Failed to fetch")) {
                     errorMessage = "Connection Failed. Check if the Gradio space is awake/running.";
@@ -71,7 +76,7 @@ export default function Home() {
                     errorMessage = `Model Error: ${error.message}`;
                 }
             }
-            
+
             alert(errorMessage);
 
         } finally {
@@ -326,11 +331,11 @@ export default function Home() {
                     <div className={`border-2 border-dashed rounded-2xl p-12 text-center transition-all duration-300 group ${
                       file ? 'border-cyan-500 bg-cyan-50' : 'border-slate-300 hover:border-cyan-400 hover:bg-slate-50'
                     }`}>
-                      <input 
-                        type="file" 
-                        accept=".nii.gz,.nii"
+                      <input
+                        type="file"
+                        accept=".nii,.gz,application/gzip,application/x-gzip,application/octet-stream"
                         onChange={(e) => setFile(e.target.files?.[0] || null)}
-                        className="hidden" 
+                        className="hidden"
                         id="file-upload"
                       />
                       <label htmlFor="file-upload" className="cursor-pointer flex flex-col items-center gap-4">
@@ -375,38 +380,51 @@ export default function Home() {
                       ) : "Run Analysis"}
                     </button>
     
-                    {/* Results Display */}
-                    {result && (
+                    {/* Results Display with Visualization */}
+                    {result && result.predictions && (
                       <div className="space-y-6 pt-8 border-t border-slate-200 animate-in fade-in slide-in-from-bottom-4">
                         <div className="flex items-center justify-between">
                             <h3 className="text-sm font-bold text-slate-400 uppercase tracking-wider">Classification Results</h3>
                             <span className="text-xs px-2 py-1 rounded bg-slate-100 text-slate-500 font-mono border border-slate-200">Model V5</span>
                         </div>
-    
+
                         <div className="space-y-6">
                           {/* Negative (Healthy) Bar */}
                           <div className="space-y-2">
                             <div className="flex justify-between text-base">
                               <span className="text-slate-700 font-bold flex items-center gap-2"><CheckCircle2 className="w-5 h-5 text-emerald-500"/> Normal / Healthy</span>
-                              <span className="font-mono text-emerald-600 font-black">{Math.round((result["Normal"] || 0) * 100)}%</span>
+                              <span className="font-mono text-emerald-600 font-black">{Math.round((result.predictions.find(p => p[0] === "Normal")?.[1] || 0) * 100)}%</span>
                             </div>
                             <div className="h-4 bg-slate-100 rounded-full overflow-hidden border border-slate-200">
-                              <div className="h-full bg-emerald-500 transition-all duration-1000 shadow-sm" style={{width: `${(result["Normal"] || 0) * 100}%`}}></div>
+                              <div className="h-full bg-emerald-500 transition-all duration-1000 shadow-sm" style={{width: `${(result.predictions.find(p => p[0] === "Normal")?.[1] || 0) * 100}%`}}></div>
                             </div>
                           </div>
-    
+
                           {/* Positive (Aneurysm) Bar */}
                           <div className="space-y-2">
                             <div className="flex justify-between text-base">
                               <span className="text-slate-700 font-bold flex items-center gap-2"><AlertCircle className="w-5 h-5 text-rose-500"/> Aneurysm Detected</span>
-                              <span className="font-mono text-rose-600 font-black">{Math.round((result["Aneurysm"] || 0) * 100)}%</span>
+                              <span className="font-mono text-rose-600 font-black">{Math.round((result.predictions.find(p => p[0] === "Aneurysm")?.[1] || 0) * 100)}%</span>
                             </div>
                             <div className="h-4 bg-slate-100 rounded-full overflow-hidden border border-slate-200">
-                              <div className="h-full bg-rose-500 transition-all duration-1000 shadow-sm" style={{width: `${(result["Aneurysm"] || 0) * 100}%`}}></div>
+                              <div className="h-full bg-rose-500 transition-all duration-1000 shadow-sm" style={{width: `${(result.predictions.find(p => p[0] === "Aneurysm")?.[1] || 0) * 100}%`}}></div>
                             </div>
                           </div>
                         </div>
-    
+
+                        {/* 3D Visualization Section */}
+                        {result.scan_data && result.heatmap_data && (
+                          <div className="pt-6 border-t border-slate-200">
+                            <h3 className="text-lg font-bold text-slate-900 mb-4">3D Visualization with Aneurysm Detection Heatmap</h3>
+                            <NiftiViewer
+                              scanData={result.scan_data}
+                              heatmapData={result.heatmap_data}
+                              predictedClass={result.predicted_class}
+                              confidence={result.confidence}
+                            />
+                          </div>
+                        )}
+
                         <div className="p-4 rounded-lg bg-blue-50 border border-blue-100 text-sm text-blue-800 leading-relaxed text-center font-medium">
                           Disclaimer: This tool is for research and experimental purposes only. Results must be clinically verified.
                         </div>
