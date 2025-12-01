@@ -19,11 +19,9 @@ export default function NiftiViewer({ scanData, heatmapData, predictedClass, con
 
     // Initialize Niivue
     const nv = new Niivue({
-      logging: true,
       dragAndDropEnabled: false,
       backColor: [0, 0, 0, 1],
       show3Dcrosshair: true,
-      onLocationChange: () => {},
     });
 
     nv.attachToCanvas(canvasRef.current);
@@ -77,19 +75,21 @@ export default function NiftiViewer({ scanData, heatmapData, predictedClass, con
         heatmap.opacity = 1.0;  // Full opacity for visibility
 
         // Threshold the heatmap to only show high-attention regions (top 20%)
-        const threshold = heatmap.global_max * 0.2;
-        heatmap.cal_min = threshold;
-        heatmap.cal_max = heatmap.global_max;
+        if (heatmap.global_max !== undefined) {
+          const threshold = heatmap.global_max * 0.2;
+          heatmap.cal_min = threshold;
+          heatmap.cal_max = heatmap.global_max;
 
-        console.log('Heatmap properties:', {
-          opacity: heatmap.opacity,
-          colormap: heatmap.colormap,
-          cal_min: heatmap.cal_min,
-          cal_max: heatmap.cal_max,
-          global_min: heatmap.global_min,
-          global_max: heatmap.global_max,
-          threshold: threshold
-        });
+          console.log('Heatmap properties:', {
+            opacity: heatmap.opacity,
+            colormap: heatmap.colormap,
+            cal_min: heatmap.cal_min,
+            cal_max: heatmap.cal_max,
+            global_min: heatmap.global_min,
+            global_max: heatmap.global_max,
+            threshold: threshold
+          });
+        }
 
         nvRef.current.updateGLVolume();
       }
