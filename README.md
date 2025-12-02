@@ -201,6 +201,8 @@ This project explores whether AI can provide meaningful assistance in this criti
 - Radiologist fatigue increases errors by 226% at high shift volumes (67-90 vs ≤19 studies)
 - Sub-Saharan Africa has <1 radiologist per 500,000 people
 
+NeuroScan addresses these challenges by providing automated pre-screening that flags potential aneurysms for clinical review, reducing the cognitive burden on radiologists during high-volume shifts. By working with lower-resolution data and supporting older 1.5T MRI systems, the tool extends advanced screening capabilities to under-resourced healthcare settings where specialist access is limited. While not replacing expert judgment, NeuroScan serves as a consistent second reader that can help maintain diagnostic quality regardless of workload or fatigue, potentially catching cases that might otherwise be missed during long shifts or in settings with limited radiologist availability.
+
 ---
 
 ## Authors
