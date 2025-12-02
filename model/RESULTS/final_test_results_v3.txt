@@ -1,0 +1,47 @@
+
+
+============================================================
+RE-EVALUATING V3 MODEL (9.5x Class Weight)
+============================================================
+✓ Loaded V3 model
+
+Getting probability predictions...
+
+THRESHOLD OPTIMIZATION
+------------------------------------------------------------
+Threshold 0.25: Recall=81.4%, Precision=53.0%, Missed=8
+Threshold 0.30: Recall=81.4%, Precision=53.8%, Missed=8
+Threshold 0.35: Recall=81.4%, Precision=55.6%, Missed=8
+Threshold 0.40: Recall=79.1%, Precision=57.6%, Missed=9
+Threshold 0.45: Recall=79.1%, Precision=60.7%, Missed=9
+Threshold 0.50: Recall=79.1%, Precision=61.8%, Missed=9
+Threshold 0.55: Recall=79.1%, Precision=61.8%, Missed=9
+Threshold 0.60: Recall=74.4%, Precision=61.5%, Missed=11
+
+🎯 Optimal Threshold: 0.35
+
+============================================================
+V3 FINAL RESULTS
+============================================================
+
+============================================================
+CLASSIFICATION METRICS
+============================================================
+
+Accuracy:     90.58%
+Recall:       81.40%
+Precision:    55.56%
+F1-Score:     66.04%
+Specificity:  91.74%
+
+Confusion Matrix:
+             Predicted
+           Healthy  Aneurysm
+Healthy      311       28
+Aneurysm       8       35
+============================================================
+
+✓ V3 Evaluation Complete
+  Threshold: 0.35
+  Recall: 81.40%
+  Missed: 8/43

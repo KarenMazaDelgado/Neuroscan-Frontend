@@ -1,0 +1,50 @@
+Saved models in Google Drive:
+============================================================
+  best_model.pth (126.58 MB)
+  best_model_v2.pth (126.58 MB)
+  best_model_v3.pth (126.58 MB)
+============================================================
+RE-EVALUATING V1 MODEL (8x Class Weight)
+============================================================
+✓ Loaded V1 model
+
+Getting probability predictions...
+
+THRESHOLD OPTIMIZATION
+------------------------------------------------------------
+Threshold 0.25: Recall=86.0%, Precision=41.1%, Missed=6
+Threshold 0.30: Recall=83.7%, Precision=42.9%, Missed=7
+Threshold 0.35: Recall=81.4%, Precision=44.9%, Missed=8
+Threshold 0.40: Recall=76.7%, Precision=45.2%, Missed=10
+Threshold 0.45: Recall=74.4%, Precision=46.4%, Missed=11
+Threshold 0.50: Recall=72.1%, Precision=48.4%, Missed=12
+Threshold 0.55: Recall=72.1%, Precision=50.8%, Missed=12
+Threshold 0.60: Recall=69.8%, Precision=53.6%, Missed=13
+
+🎯 Optimal Threshold: 0.35
+
+============================================================
+V1 FINAL RESULTS
+============================================================
+
+============================================================
+CLASSIFICATION METRICS
+============================================================
+
+Accuracy:     86.65%
+Recall:       81.40%
+Precision:    44.87%
+F1-Score:     57.85%
+Specificity:  87.32%
+
+Confusion Matrix:
+             Predicted
+           Healthy  Aneurysm
+Healthy      296       43
+Aneurysm       8       35
+============================================================
+
+✓ V1 Evaluation Complete
+  Threshold: 0.35
+  Recall: 81.40%
+  Missed: 8/43

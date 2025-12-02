@@ -1,0 +1,20 @@
+
+AI4ALL Project - Brain Vessel Abnormality Detection
+Final Test Results (Model Class Weight)
+============================================================
+
+Overall Accuracy:      84.82%
+Recall (Sensitivity):  81.40%
+Precision (PPV):       41.18%
+F1-Score:              54.69%
+Specificity:           85.25%
+
+Confusion Matrix:
+                 Predicted
+             Healthy  Aneurysm
+Actual Healthy   289       50
+       Aneurysm    8       35
+
+Optimal Threshold: 0.25
+Missed Aneurysms: 8/43
+False Positives: 50

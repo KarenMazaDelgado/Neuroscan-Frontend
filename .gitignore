@@ -1,7 +1,7 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
-/node_modules
+node_modules/
 /.pnp
 .pnp.*
 .yarn/*
@@ -10,11 +10,25 @@
 !.yarn/releases
 !.yarn/versions
 
+# Python dependencies
+backend/.venv/
+backend/__pycache__/
+*.pyc
+
+# Large model files
+*.pth
+*.ckpt
+*.pt
+
+# Medical imaging files (too large for git)
+*.nii
+*.nii.gz
+
 # testing
 /coverage
 
 # next.js
-/.next/
+.next/
 /out/
 
 # production

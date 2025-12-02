@@ -1,0 +1,45 @@
+============================================================
+RE-EVALUATING V2 MODEL (12x Class Weight)
+============================================================
+✓ Loaded V2 model
+
+Getting probability predictions...
+
+THRESHOLD OPTIMIZATION
+------------------------------------------------------------
+Threshold 0.25: Recall=90.7%, Precision=41.5%, Missed=4
+Threshold 0.30: Recall=88.4%, Precision=42.7%, Missed=5
+Threshold 0.35: Recall=86.0%, Precision=48.1%, Missed=6
+Threshold 0.40: Recall=86.0%, Precision=49.3%, Missed=6
+Threshold 0.45: Recall=86.0%, Precision=49.3%, Missed=6
+Threshold 0.50: Recall=83.7%, Precision=49.3%, Missed=7
+Threshold 0.55: Recall=83.7%, Precision=52.2%, Missed=7
+Threshold 0.60: Recall=81.4%, Precision=51.5%, Missed=8
+
+🎯 Optimal Threshold: 0.55
+
+============================================================
+V2 FINAL RESULTS
+============================================================
+
+============================================================
+CLASSIFICATION METRICS
+============================================================
+
+Accuracy:     89.53%
+Recall:       83.72%
+Precision:    52.17%
+F1-Score:     64.29%
+Specificity:  90.27%
+
+Confusion Matrix:
+             Predicted
+           Healthy  Aneurysm
+Healthy      306       33
+Aneurysm       7       36
+============================================================
+
+✓ V2 Evaluation Complete
+  Threshold: 0.55
+  Recall: 83.72%
+  Missed: 7/43
