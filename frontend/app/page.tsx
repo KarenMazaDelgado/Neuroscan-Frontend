@@ -439,7 +439,7 @@ export default function Home() {
                   <div className="space-y-3">
                     <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Complete Test Set</p>
                     <a
-                      href="/test_samples.zip"
+                      href="/test_samples_20.zip"
                       download
                       className="block w-full py-4 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-bold text-lg rounded-xl transition-all shadow-lg shadow-cyan-500/20"
                     >
@@ -450,18 +450,12 @@ export default function Home() {
 
                   <div className="border-t border-slate-200 pt-6">
                     <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4">Individual Samples</p>
-                    <div className="grid grid-cols-2 gap-3">
-                      <a href="/samples/aneurysm_1.nii" download className="py-3 px-4 bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold rounded-xl transition-colors border border-rose-200">
-                        Aneurysm #1
+                    <div className="grid grid-cols-2 gap-4">
+                      <a href="/sample_aneurysm_001.nii" download className="py-4 px-6 bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold text-lg rounded-xl transition-colors border border-rose-200">
+                        Aneurysm
                       </a>
-                      <a href="/samples/aneurysm_5.nii" download className="py-3 px-4 bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold rounded-xl transition-colors border border-rose-200">
-                        Aneurysm #5
-                      </a>
-                      <a href="/samples/normal_1.nii" download className="py-3 px-4 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold rounded-xl transition-colors border border-emerald-200">
-                        Normal #1
-                      </a>
-                      <a href="/samples/normal_7.nii" download className="py-3 px-4 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold rounded-xl transition-colors border border-emerald-200">
-                        Normal #7
+                      <a href="/sample_normal_001.nii" download className="py-4 px-6 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold text-lg rounded-xl transition-colors border border-emerald-200">
+                        Normal
                       </a>
                     </div>
                   </div>
