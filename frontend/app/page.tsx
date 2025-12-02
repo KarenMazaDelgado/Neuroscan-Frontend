@@ -1,14 +1,17 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { client } from "@gradio/client";
-import { Upload, Activity, AlertCircle, CheckCircle2, ChevronRight, ShieldAlert, HeartPulse, Brain, Download, Database } from 'lucide-react';
+import { Upload, Activity, AlertCircle, CheckCircle2, ChevronRight, ShieldAlert, HeartPulse, Brain, Download, Database, Zap, Scan, Eye, Target } from 'lucide-react';
 import dynamic from 'next/dynamic';
-import Image from 'next/image';
 
+// Dynamically import NiftiViewer to avoid SSR issues
 const NiftiViewer = dynamic(() => import('./components/NiftiViewer'), { ssr: false });
 
+// Use the local Next.js proxy rewrite path
+// DEFINED ONCE AT COMPONENT SCOPE
+// const HF_SPACE_URL = "https://ai4all3dcnn-neuroscan-backend.hf.space";
 const HF_SPACE_URL = "https://cooleschimo-neuroscan-backend.hf.space";
-// const HF_SPACE_URL = "http://127.0.0.1:7860";
+// const HF_SPACE_URL = "http://127.0.0.1:7860";  // Local backend (only for local dev)
 
 interface AnalysisResult {
   predictions: [string, number][];
@@ -26,23 +29,21 @@ interface BatchResult extends AnalysisResult {
 export default function Home() {
     const [file, setFile] = useState<File | null>(null);
     const [result, setResult] = useState<AnalysisResult | null>(null);
-
     const [batchMode, setBatchMode] = useState(false);
     const [files, setFiles] = useState<File[]>([]);
     const [batchResults, setBatchResults] = useState<BatchResult[]>([]);
     const [batchProgress, setBatchProgress] = useState({ current: 0, total: 0 });
     const [selectedResult, setSelectedResult] = useState<BatchResult | null>(null);
     const [selectedForCompare, setSelectedForCompare] = useState<BatchResult[]>([]);
-
     const [compareMode, setCompareMode] = useState(false);
     const [fileA, setFileA] = useState<File | null>(null);
     const [fileB, setFileB] = useState<File | null>(null);
     const [resultA, setResultA] = useState<AnalysisResult | null>(null);
     const [resultB, setResultB] = useState<AnalysisResult | null>(null);
-
     const [loading, setLoading] = useState(false);
     const [scrolled, setScrolled] = useState(false);
 
+    // Handle scroll for navbar styling
     useEffect(() => {
         const handleScroll = () => setScrolled(window.scrollY > 50);
         window.addEventListener('scroll', handleScroll);
@@ -131,6 +132,7 @@ export default function Home() {
                             filename: file.name,
                             fileIndex: i
                         });
+                        // Update results incrementally
                         setBatchResults([...results]);
                         console.log(`✓ Successfully processed ${file.name}`);
                     } else {
@@ -138,8 +140,10 @@ export default function Home() {
                     }
                 } catch (error: any) {
                     console.error(`✗ Error processing ${file.name}:`, error.message || error);
+                    // Continue with next file even if this one fails
                 }
 
+                // Small delay between requests to avoid overwhelming the backend
                 if (i < files.length - 1) {
                     await new Promise(resolve => setTimeout(resolve, 500));
                 }
@@ -204,179 +208,131 @@ export default function Home() {
     };
 
     return (
-        <main className="min-h-screen font-sans selection:bg-blue-100">
-
-          {/* ================= PROFESSIONAL NAVBAR ================= */}
-          <div className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-slate-200 shadow-sm">
-            <nav className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-              {/* Logo & Branding */}
-              <div className="flex items-center gap-3 cursor-pointer" onClick={() => window.scrollTo(0,0)}>
-                <div className="w-12 h-12 rounded bg-gradient-to-br from-blue-600 to-blue-700 flex items-center justify-center shadow-md">
-                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    {/* Brain outline */}
-                    <path d="M12 3C8.5 3 6 5.5 6 8.5C6 9.5 6.3 10.4 6.8 11.2C6.3 11.8 6 12.6 6 13.5C6 15.4 7.3 17 9 17.5V19C9 20.1 9.9 21 11 21H13C14.1 21 15 20.1 15 19V17.5C16.7 17 18 15.4 18 13.5C18 12.6 17.7 11.8 17.2 11.2C17.7 10.4 18 9.5 18 8.5C18 5.5 15.5 3 12 3Z" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                    {/* Scan lines */}
-                    <line x1="8" y1="10" x2="16" y2="10" stroke="white" strokeWidth="1.2" opacity="0.6"/>
-                    <line x1="8" y1="13" x2="16" y2="13" stroke="white" strokeWidth="1.2" opacity="0.6"/>
-                    <line x1="9" y1="16" x2="15" y2="16" stroke="white" strokeWidth="1.2" opacity="0.6"/>
-                  </svg>
+        <main className="min-h-screen font-sans selection:bg-cyan-100">
+          
+          {/* ================= BUBBLE NAVBAR ================= */}
+          <div className="fixed top-6 left-0 right-0 z-50 flex justify-center px-4 pointer-events-none">
+            <nav className={`pointer-events-auto glass-panel rounded-full px-6 py-3 flex items-center gap-8 transition-all duration-300 ${scrolled ? 'scale-95 shadow-xl bg-white/90' : 'scale-100 bg-white/70'}`}>
+              {/* Logo */}
+              <div className="flex items-center gap-2 cursor-pointer" onClick={() => window.scrollTo(0,0)}>
+                <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-cyan-600 to-blue-700 flex items-center justify-center shadow-lg shadow-cyan-500/20">
+                  <Activity className="w-4 h-4 text-white" />
                 </div>
-                <div className="flex flex-col">
-                  <span className="font-bold text-lg text-slate-900 leading-tight">
-                    NeuroScan
-                  </span>
-                  <span className="text-xs text-slate-500 leading-tight">
-                    Neuro Imaging AI
-                  </span>
-                </div>
+                <span className="font-bold text-lg tracking-tight text-slate-800 hidden sm:block">
+                  NeuroScan
+                </span>
               </div>
-
+    
               {/* Links */}
-              <div className="hidden md:flex items-center gap-1 text-sm font-semibold text-slate-600">
-                <button onClick={() => scrollTo('impact')} className="hover:text-blue-700 hover:bg-blue-50 px-4 py-2 rounded transition-all">Impact</button>
-                <button onClick={() => scrollTo('data-section')} className="hover:text-blue-700 hover:bg-blue-50 px-4 py-2 rounded transition-all">
-                    Data & Validation
+              <div className="hidden md:flex items-center gap-2 text-sm font-semibold text-slate-500">
+                <button onClick={() => scrollTo('impact')} className="hover:text-cyan-700 hover:bg-slate-100 px-4 py-2 rounded-full transition-all">Impact</button>
+                <button onClick={() => scrollTo('data-section')} className="hover:text-cyan-700 hover:bg-slate-100 px-4 py-2 rounded-full transition-all flex items-center gap-2">
+                    Data & Download
                 </button>
               </div>
-
+    
               {/* CTA Button */}
-              <button
+              <button 
                 onClick={() => scrollTo('diagnosis')}
-                className="bg-blue-600 text-white hover:bg-blue-700 px-6 py-2.5 rounded text-sm font-bold transition-colors flex items-center gap-2 shadow-md"
+                className="bg-slate-900 text-white hover:bg-slate-800 px-5 py-2 rounded-full text-sm font-bold transition-colors flex items-center gap-2 shadow-lg shadow-slate-900/10"
               >
-                Start Analysis <ChevronRight className="w-4 h-4" />
+                Run Demo <ChevronRight className="w-3 h-3" />
               </button>
             </nav>
           </div>
     
           {/* ================= HERO SECTION ================= */}
-          <section className="relative pt-32 pb-24 px-6 overflow-hidden bg-gradient-to-br from-slate-50 via-white to-blue-50/30 border-b border-slate-200">
-            {/* Background Medical Image with Overlay */}
-            <div className="absolute inset-0 overflow-hidden">
-              <img
-                src="/images/brain-scan-hero.jpg"
-                alt="Medical brain scan background"
-                className="absolute inset-0 w-full h-full object-cover opacity-[0.08] z-0"
-              />
-              <div className="absolute inset-0 bg-gradient-to-br from-white via-white/95 to-blue-50/90 z-10"></div>
+          <section className="relative pt-48 pb-32 px-6 overflow-hidden bg-slate-50">
+            {/* Background Gradients */}
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[600px] bg-cyan-200/40 rounded-[100%] blur-[100px] -z-10 opacity-60"></div>
+            <div className="absolute top-20 right-0 w-[400px] h-[400px] bg-blue-200/30 rounded-[100%] blur-[80px] -z-10 opacity-50"></div>
+
+            {/* Faded Background Icons */}
+            <div className="absolute top-10 right-10 opacity-[0.05] z-0">
+              <Brain className="w-[400px] h-[400px] text-cyan-500" />
+            </div>
+            <div className="absolute bottom-10 left-10 opacity-[0.04] z-0">
+              <HeartPulse className="w-[400px] h-[400px] text-blue-500" />
             </div>
 
-            {/* Medical Grid Pattern Background */}
-            <div
-              className="absolute inset-0 opacity-[0.03] z-20"
-              style={{
-                backgroundImage: `linear-gradient(#1e40af 1px, transparent 1px), linear-gradient(90deg, #1e40af 1px, transparent 1px)`,
-                backgroundSize: '50px 50px'
-              }}
-            ></div>
-
-            {/* Large Decorative Medical Icons - Brain (Top Right) */}
-            <div className="absolute top-20 right-10 opacity-[0.03] pointer-events-none z-20">
-              <Brain className="w-64 h-64 text-blue-600" />
-            </div>
-
-            {/* Large Decorative Medical Icons - Activity (Bottom Left) */}
-            <div className="absolute bottom-10 left-10 opacity-[0.03] pointer-events-none z-20">
-              <Activity className="w-72 h-72 text-blue-600" />
-            </div>
-
-            {/* Subtle Background Gradients */}
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-blue-100/30 rounded-[100%] blur-[120px] -z-10 opacity-40"></div>
-
-            <div className="max-w-5xl mx-auto text-center space-y-6 relative z-10">
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded border border-emerald-200 bg-emerald-50 shadow-sm text-emerald-700 text-xs font-bold uppercase tracking-wider">
-                <Activity className="w-3.5 h-3.5 animate-pulse" />
+            <div className="max-w-4xl mx-auto text-center space-y-8">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-cyan-200 bg-white shadow-sm text-cyan-700 text-xs font-bold uppercase tracking-wider">
+                <span className="w-2 h-2 rounded-full bg-cyan-500 glow-point"></span>
                 V5 Model Online
               </div>
-
-              <h1 className="text-4xl md:text-6xl font-bold tracking-tight leading-[1.15] text-slate-900">
-                Brain Aneurysm Detection<br />
-                <span className="text-blue-600">for Efficient Medical Triage</span>
+              
+              <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight leading-[1.1] text-slate-900">
+                <span className="text-gradient">Intracranial Vascular Diagnostics</span><br />
+                for Efficient Medical Triage
               </h1>
-
-              <p className="text-base md:text-lg text-slate-600 max-w-3xl mx-auto leading-relaxed">
-                Advanced deep learning for efficient radiologist triage and accessible screening in under-resourced healthcare settings. AI-powered detection to flag potential aneurysms for clinical review and reduce diagnostic burden.
+    
+              <p className="text-lg md:text-xl text-slate-600 max-w-2xl mx-auto leading-relaxed font-medium">
+                Deep learning for efficient triage and accessible screening. AI-powered detection to flag potential aneurysms and reduce diagnostic burden.
               </p>
-
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-6">
-                <button onClick={() => scrollTo('diagnosis')} className="w-full sm:w-auto px-8 py-3.5 bg-blue-600 hover:bg-blue-700 text-white rounded font-bold transition-all shadow-lg">
-                  Start Analysis
+    
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
+                <button onClick={() => scrollTo('diagnosis')} className="w-full sm:w-auto px-8 py-4 bg-cyan-600 hover:bg-cyan-500 text-white rounded-full font-bold transition-all shadow-xl shadow-cyan-500/20 hover:scale-105">
+                  Launch Diagnostic Tool
                 </button>
-                <button onClick={() => scrollTo('impact')} className="w-full sm:w-auto px-8 py-3.5 bg-white text-slate-700 border-2 border-slate-300 hover:border-blue-600 hover:text-blue-600 rounded font-bold transition-all">
-                  View Impact
+                <button onClick={() => scrollTo('impact')} className="w-full sm:w-auto px-8 py-4 bg-white text-slate-600 border border-slate-200 hover:border-cyan-300 hover:text-cyan-700 rounded-full font-bold transition-all shadow-sm">
+                  Why This Matters
                 </button>
               </div>
             </div>
           </section>
     
           {/* ================= IMPORTANCE / IMPACT SECTION ================= */}
-          <section id="impact" className="py-24 px-6 bg-slate-50 relative overflow-hidden">
-            {/* Background Medical Image with Strong Overlay */}
-            <div className="absolute inset-0 overflow-hidden">
-              <img
-                src="/images/medical-team.jpg"
-                alt="Medical professionals"
-                className="absolute inset-0 w-full h-full object-cover opacity-[0.06] z-0"
-              />
-              <div className="absolute inset-0 bg-gradient-to-r from-slate-50 via-slate-50/98 to-slate-50/95 z-10"></div>
-            </div>
-
-
-            {/* Faded HeartPulse Icon Decoration */}
-            <div className="absolute top-10 right-10 opacity-[0.03] pointer-events-none z-20">
-              <HeartPulse className="w-56 h-56 text-blue-600" />
-            </div>
-
-            <div className="max-w-6xl mx-auto relative z-10">
-              <div className="grid md:grid-cols-2 gap-20 items-center">
-
-                <div className="space-y-10">
-                  <h2 className="text-4xl font-bold text-slate-900">Impact</h2>
-                  <div className="space-y-8">
-                    <div className="flex gap-5">
-                      <div className="mt-1 bg-rose-50 p-3 rounded-2xl h-fit border border-rose-100">
-                        <ShieldAlert className="w-6 h-6 text-rose-600" />
+          <section id="impact" className="py-16 px-6 bg-white">
+            <div className="max-w-6xl mx-auto">
+              <div className="grid md:grid-cols-2 gap-12 items-center">
+                
+                <div className="space-y-6">
+                  <h2 className="text-3xl font-extrabold text-slate-900">Why NeuroScan Matters</h2>
+                  <div className="space-y-5">
+                    <div className="flex gap-4">
+                      <div className="mt-1 bg-rose-50 p-2.5 rounded-2xl h-fit border border-rose-100">
+                        <ShieldAlert className="w-5 h-5 text-rose-600" />
                       </div>
                       <div>
-                        <h3 className="text-xl font-bold text-slate-900">Critical Mortality Rates</h3>
-                        <p className="text-slate-600 mt-2 leading-relaxed text-lg">
+                        <h3 className="text-lg font-bold text-slate-900">Critical Mortality Rates</h3>
+                        <p className="text-slate-600 mt-1.5 leading-normal text-base">
                           Brain aneurysms often show no symptoms until rupture. Once ruptured, the mortality rate is approximately <span className="text-rose-600 font-black">50%</span>.
                         </p>
                       </div>
                     </div>
-    
-                    <div className="flex gap-5">
-                      <div className="mt-1 bg-amber-50 p-3 rounded-2xl h-fit border border-amber-100">
-                        <AlertCircle className="w-6 h-6 text-amber-600" />
+
+                    <div className="flex gap-4">
+                      <div className="mt-1 bg-amber-50 p-2.5 rounded-2xl h-fit border border-amber-100">
+                        <AlertCircle className="w-5 h-5 text-amber-600" />
                       </div>
                       <div>
-                        <h3 className="text-xl font-bold text-slate-900">The Cognitive Fatigue Problem</h3>
-                        <p className="text-slate-600 mt-2 leading-relaxed text-lg">
-                          A landmark <a href="https://pubs.rsna.org/doi/abs/10.1148/radiol.2017170555" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-700 underline">2018 study analyzing 2.9 million radiology exams</a> found diagnostic errors peaked after <span className="font-black text-slate-900">10 hours</span> into shifts, with <span className="font-black text-slate-900">76% higher volume</span> on error-containing shifts.
+                        <h3 className="text-lg font-bold text-slate-900">The Cognitive Fatigue Problem</h3>
+                        <p className="text-slate-600 mt-1.5 leading-normal text-base">
+                          A landmark <a href="https://pubs.rsna.org/doi/abs/10.1148/radiol.2017170555" target="_blank" rel="noopener noreferrer" className="text-cyan-600 hover:text-cyan-700 underline">2018 study analyzing 2.9 million radiology exams</a> found diagnostic errors peaked after <span className="font-black text-slate-900">10 hours</span> into shifts. Error-containing shifts were associated with <span className="font-black text-slate-900">76% higher</span> volume of work.
                         </p>
                       </div>
                     </div>
 
-                    <div className="flex gap-5">
-                      <div className="mt-1 bg-blue-50 p-3 rounded-2xl h-fit border border-blue-100">
-                        <Brain className="w-6 h-6 text-blue-600" />
+                    <div className="flex gap-4">
+                      <div className="mt-1 bg-cyan-50 p-2.5 rounded-2xl h-fit border border-cyan-100">
+                        <Brain className="w-5 h-5 text-cyan-600" />
                       </div>
                       <div>
-                        <h3 className="text-xl font-bold text-slate-900">Efficient Triage for Radiologists</h3>
-                        <p className="text-slate-600 mt-2 leading-relaxed text-lg">
-                          NeuroScan provides consistent automated pre-screening regardless of shift length or volume, flagging obvious cases so radiologists can focus their expertise on ambiguous findings and maintain diagnostic quality throughout their shifts.
+                        <h3 className="text-lg font-bold text-slate-900">Efficient Triage for Radiologists</h3>
+                        <p className="text-slate-600 mt-1.5 leading-normal text-base">
+                          Automated pre-screening flags obvious cases so radiologists can focus on complex findings, maintaining diagnostic quality regardless of workload.
                         </p>
                       </div>
                     </div>
 
-                    <div className="flex gap-5">
-                      <div className="mt-1 bg-emerald-50 p-3 rounded-2xl h-fit border border-emerald-100">
-                        <HeartPulse className="w-6 h-6 text-emerald-600" />
+                    <div className="flex gap-4">
+                      <div className="mt-1 bg-emerald-50 p-2.5 rounded-2xl h-fit border border-emerald-100">
+                        <HeartPulse className="w-5 h-5 text-emerald-600" />
                       </div>
                       <div>
-                        <h3 className="text-xl font-bold text-slate-900">Democratizing Healthcare Access</h3>
-                        <p className="text-slate-600 mt-2 leading-relaxed text-lg">
-                          NeuroScan is trained on lower-resolution data comparable to 1.5T MRI systems from the 2005-2012 era, allowing it to work with older equipment in rural hospitals and emerging <a href="https://www.nature.com/articles/s41467-021-25441-6" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-700 underline">portable low-field MRI systems</a>, making advanced screening accessible to underserved communities.
+                        <h3 className="text-lg font-bold text-slate-900">Democratizing Healthcare Access</h3>
+                        <p className="text-slate-600 mt-1.5 leading-normal text-base">
+                          Compatible with older <span className="font-black text-slate-900">1.5T MRI systems</span> and <a href="https://www.nature.com/articles/s41467-021-25441-6" target="_blank" rel="noopener noreferrer" className="text-cyan-600 hover:text-cyan-700 underline">portable low-field scanners</a>, making advanced screening accessible to rural hospitals and underserved communities.
                         </p>
                       </div>
                     </div>
@@ -384,29 +340,35 @@ export default function Home() {
                 </div>
     
                 {/* Visual Stats (Gradient Background) */}
-                <div className="relative p-4 pt-10">
+                <div className="relative p-4 pt-6">
                   {/* The subtle gradient effect (made larger and more central) */}
-                  <div className="absolute inset-0 transform scale-150 bg-gradient-to-tr from-blue-200/25 via-rose-200/25 to-blue-300/25 rounded-full blur-[150px] -z-10 opacity-60"></div>
+                  <div className="absolute inset-0 transform scale-150 bg-gradient-to-tr from-cyan-300/30 via-rose-300/30 to-blue-300/30 rounded-full blur-[150px] -z-10 opacity-80 animate-pulse-slow"></div>
 
-                  <div className="bg-white p-6 space-y-12 rounded-lg border border-slate-200 shadow-sm">
-                    <div className="text-center space-y-2">
-                      <div className="text-6xl md:text-7xl font-black text-slate-900 tracking-tight">6.5M</div>
-                      <div className="text-sm text-slate-500 font-bold uppercase tracking-widest">People in the US with unruptured aneurysms</div>
+                  <div className="bg-white p-3 space-y-8 rounded-xl">
+                    <div className="text-center space-y-1.5">
+                      <div className="text-5xl md:text-6xl font-black text-slate-900 tracking-tight">6.5M</div>
+                      <div className="text-xs text-slate-500 font-bold uppercase tracking-wider">People in the US with unruptured aneurysms</div>
                     </div>
 
-                      <div className="text-center space-y-2">
-                      <div className="text-6xl md:text-7xl font-black text-rose-600 tracking-tight">30k</div>
-                      <div className="text-sm text-slate-500 font-bold uppercase tracking-widest">Ruptures occur each year</div>
+                    <div className="w-12 h-0.5 bg-slate-200 mx-auto rounded-full"></div>
+
+                      <div className="text-center space-y-1.5">
+                      <div className="text-5xl md:text-6xl font-black text-rose-600 tracking-tight">30k</div>
+                      <div className="text-xs text-slate-500 font-bold uppercase tracking-wider">Ruptures occur each year</div>
                     </div>
 
-                      <div className="text-center space-y-2">
-                      <div className="text-6xl md:text-7xl font-black text-blue-700 tracking-tight">+226%</div>
-                      <div className="text-sm text-slate-500 font-bold uppercase tracking-widest">Error rate increase at high shift volumes (67-90 vs ≤19 studies)</div>
+                    <div className="w-12 h-0.5 bg-slate-200 mx-auto rounded-full"></div>
+
+                      <div className="text-center space-y-1.5">
+                      <div className="text-5xl md:text-6xl font-black text-cyan-700 tracking-tight">+226%</div>
+                      <div className="text-xs text-slate-500 font-bold uppercase tracking-wider">Error rate increase at high shift volumes (67-90 vs ≤19 studies)</div>
                     </div>
 
-                      <div className="text-center space-y-2">
-                      <div className="text-6xl md:text-7xl font-black text-emerald-600 tracking-tight">&lt;1:500k</div>
-                      <div className="text-sm text-slate-500 font-bold uppercase tracking-widest">Typical radiologist ratio in sub-Saharan Africa</div>
+                    <div className="w-12 h-0.5 bg-slate-200 mx-auto rounded-full"></div>
+
+                      <div className="text-center space-y-1.5">
+                      <div className="text-5xl md:text-6xl font-black text-emerald-600 tracking-tight">&lt;1:500k</div>
+                      <div className="text-xs text-slate-500 font-bold uppercase tracking-wider">Typical radiologist ratio in sub-Saharan Africa</div>
                     </div>
                   </div>
 
@@ -414,110 +376,91 @@ export default function Home() {
                 
                 {/* Sources Div, spanning both columns (or just placed after the grid) */}
               </div>
-              <div className="pt-16 text-center">
+              <div className="pt-10 text-center">
                   <p className="text-sm text-slate-500 max-w-3xl mx-auto">
-                    *Sources: 6.5 million prevalence and 30,000 annual ruptures based on common NIH/CDC estimates. Radiologist cognitive fatigue data from <a href="https://pubs.rsna.org/doi/abs/10.1148/radiol.2017170555" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-700 underline">Hanna et al., Radiology 2018</a>. Error rate volume correlation from <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC11288559/" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-700 underline">Ivanovic et al., AJNR 2024</a>. Sub-Saharan Africa radiologist shortage from <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC3424787/" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-700 underline">Journal of Clinical Imaging Science 2012</a>.
+                    *Sources: 6.5 million prevalence and 30,000 annual ruptures based on common NIH/CDC estimates. Radiologist cognitive fatigue data from <a href="https://pubs.rsna.org/doi/abs/10.1148/radiol.2017170555" target="_blank" rel="noopener noreferrer" className="text-cyan-600 hover:text-cyan-700 underline">Hanna et al., Radiology 2018</a>. Error rate volume correlation from <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC11288559/" target="_blank" rel="noopener noreferrer" className="text-cyan-600 hover:text-cyan-700 underline">Ivanovic et al., AJNR 2024</a>. Sub-Saharan Africa radiologist shortage from <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC3424787/" target="_blank" rel="noopener noreferrer" className="text-cyan-600 hover:text-cyan-700 underline">Journal of Clinical Imaging Science 2012</a>.
                   </p>
               </div>
             </div>
           </section>
     
           {/* ================= SCIENCE & DATA SECTION ================= */}
-          <section id="data-section" className="py-24 px-6 bg-white relative overflow-hidden">
-            {/* Faded Database Icon Decoration */}
-            <div className="absolute top-20 left-10 opacity-[0.03] pointer-events-none">
-              <Database className="w-64 h-64 text-blue-600" />
-            </div>
-
-            <div className="max-w-6xl mx-auto grid lg:grid-cols-12 gap-12 relative z-10">
-
+          <section id="data-section" className="py-24 px-6 bg-slate-50 border-t border-slate-200">
+            <div className="max-w-6xl mx-auto grid lg:grid-cols-12 gap-12">
+              
               <div className="lg:col-span-7 space-y-12">
                 <div>
                   <div className="flex items-center gap-3 mb-4">
-                      <div className="p-2 bg-blue-100 rounded text-blue-700"><Database className="w-6 h-6" /></div>
+                      <div className="p-2 bg-cyan-100 rounded-lg text-cyan-700"><Database className="w-6 h-6" /></div>
                       <h2 className="text-3xl font-bold text-slate-900">Benchmarks & Data</h2>
                   </div>
                   <p className="text-slate-600 text-lg leading-relaxed">
-                    Our V5 model achieved 83.72% sensitivity on low-resolution data (64×64×64 voxels), compared to ~95% sensitivity in clinical MRA studies using high-resolution scans (512×512×200+ voxels). While comparatively accurate given the significant resolution constraints, there remains an 11+ percentage point gap.
+                    Our V5 model achieved 83.72% sensitivity, approaching the 95% sensitivity reported in clinical MRA studies (Sailer et al., 2014), despite working with significantly lower resolution data (64×64×64 voxels vs. clinical 512×512×200+ scans).
                   </p>
                 </div>
 
-                <div className="bg-slate-50 rounded-lg p-6 border border-slate-200 shadow-sm">
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <span className="text-slate-700 font-semibold">NeuroScan V5 Sensitivity</span>
-                      <span className="text-2xl font-black text-blue-600">83.72%</span>
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div className="bg-white rounded-3xl p-8 border border-slate-200 shadow-lg text-center space-y-3">
+                    <p className="text-slate-600 font-semibold text-lg">Clinical MRA Studies</p>
+                    <p className="text-6xl font-black text-slate-400">~95%</p>
+                  </div>
+
+                  <div className="bg-gradient-to-br from-cyan-500 to-blue-600 rounded-3xl p-8 shadow-xl text-center space-y-3 relative overflow-hidden">
+                    <div className="absolute top-4 right-4 opacity-20">
+                      <Brain className="w-16 h-16 text-white" />
                     </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-slate-700 font-semibold">Clinical MRA Studies</span>
-                      <span className="text-2xl font-black text-slate-400">~95%</span>
-                    </div>
-                    <p className="text-sm text-slate-500 italic">Performance gap likely due to 64×64×64 vs. 512×512×200+ resolution difference</p>
-                    <p className="text-sm text-slate-600 mt-3 pt-3 border-t border-slate-200">
-                      <strong>Room for Improvement:</strong> Higher-resolution training data, architectural refinements, and expanded datasets could help close this gap. This tool should complement, not replace, clinical judgment.
-                    </p>
+                    <p className="text-white font-semibold text-lg relative z-10">NeuroScan V5 Sensitivity</p>
+                    <p className="text-6xl font-black text-white relative z-10">83.72%</p>
                   </div>
                 </div>
-              </div>
 
+                <div className="bg-amber-50 border border-amber-200 rounded-2xl p-6">
+                  <p className="text-sm font-bold text-amber-900 mb-2">Room for Improvement</p>
+                  <p className="text-sm text-amber-800 leading-relaxed">
+                    Higher-resolution training data, architectural refinements, and expanded datasets could help close this gap. This tool should complement, not replace, clinical judgment.
+                  </p>
+                </div>
+              </div>
+    
               {/* Download Box */}
               <div className="lg:col-span-5 flex flex-col justify-center">
-                <div className="bg-slate-50 p-8 rounded-lg border border-slate-200 shadow-md space-y-6">
-                  <div className="text-center">
-                    <div className="w-20 h-20 mx-auto bg-blue-50 rounded flex items-center justify-center text-blue-600 mb-4 border border-blue-100">
-                      <Download className="w-10 h-10" />
-                    </div>
+                <div className="bg-white p-10 rounded-3xl text-center space-y-8 border border-slate-200 shadow-2xl">
+                  <div className="w-20 h-20 mx-auto bg-cyan-50 rounded-2xl flex items-center justify-center text-cyan-600 mb-4 border border-cyan-100">
+                    <Download className="w-10 h-10" />
+                  </div>
+                  <div>
                     <h3 className="text-2xl font-bold text-slate-900 mb-2">Validate the Findings</h3>
-                    <p className="text-slate-600 text-sm">
+                    <p className="text-slate-500 text-base">
                       We believe in transparency. Download anonymized test samples (NIfTI format) to validate our model using the diagnostic tool below.
                     </p>
                   </div>
 
-                  {/* Batch Test Set Download */}
+                  {/* Complete Test Set */}
                   <div className="space-y-3">
-                    <div className="text-left">
-                      <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Complete Test Set</p>
-                      <a
-                        href="/test_samples_20.zip"
-                        download
-                        className="block w-full py-4 bg-blue-600 text-white hover:bg-blue-700 font-bold text-base rounded transition-colors shadow-md text-center"
-                      >
-                        Download 20 Test Scans (ZIP)
-                      </a>
-                      <p className="text-xs text-slate-500 mt-2 text-center">10 aneurysm + 10 normal scans</p>
-                    </div>
+                    <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Complete Test Set</p>
+                    <a
+                      href="/test_samples.zip"
+                      download
+                      className="block w-full py-4 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-bold text-lg rounded-xl transition-all shadow-lg shadow-cyan-500/20"
+                    >
+                      Download 20 Test Scans (ZIP)
+                    </a>
+                    <p className="text-sm text-slate-500">10 aneurysm + 10 normal scans</p>
                   </div>
 
-                  {/* Individual Samples */}
-                  <div className="space-y-3 pt-4 border-t border-slate-300">
-                    <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Individual Samples</p>
-                    <div className="grid grid-cols-2 gap-2">
-                      <a
-                        href="/sample_aneurysm_001.nii"
-                        download
-                        className="px-3 py-2 bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-200 rounded text-xs font-semibold transition-colors text-center"
-                      >
+                  <div className="border-t border-slate-200 pt-6">
+                    <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4">Individual Samples</p>
+                    <div className="grid grid-cols-2 gap-3">
+                      <a href="/samples/aneurysm_1.nii" download className="py-3 px-4 bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold rounded-xl transition-colors border border-rose-200">
                         Aneurysm #1
                       </a>
-                      <a
-                        href="/sample_aneurysm_005.nii"
-                        download
-                        className="px-3 py-2 bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-200 rounded text-xs font-semibold transition-colors text-center"
-                      >
+                      <a href="/samples/aneurysm_5.nii" download className="py-3 px-4 bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold rounded-xl transition-colors border border-rose-200">
                         Aneurysm #5
                       </a>
-                      <a
-                        href="/sample_normal_001.nii"
-                        download
-                        className="px-3 py-2 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200 rounded text-xs font-semibold transition-colors text-center"
-                      >
+                      <a href="/samples/normal_1.nii" download className="py-3 px-4 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold rounded-xl transition-colors border border-emerald-200">
                         Normal #1
                       </a>
-                      <a
-                        href="/sample_normal_007.nii"
-                        download
-                        className="px-3 py-2 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200 rounded text-xs font-semibold transition-colors text-center"
-                      >
+                      <a href="/samples/normal_7.nii" download className="py-3 px-4 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold rounded-xl transition-colors border border-emerald-200">
                         Normal #7
                       </a>
                     </div>
@@ -528,37 +471,23 @@ export default function Home() {
           </section>
     
           {/* ================= APP INTERFACE ================= */}
-          <section id="diagnosis" className="py-24 px-6 relative bg-slate-50 border-t border-slate-200 overflow-hidden">
-            {/* Medical Grid Pattern Background */}
-            <div
-              className="absolute inset-0 opacity-[0.02]"
-              style={{
-                backgroundImage: `linear-gradient(#1e40af 1px, transparent 1px), linear-gradient(90deg, #1e40af 1px, transparent 1px)`,
-                backgroundSize: '60px 60px'
-              }}
-            ></div>
-
-            {/* Faded Brain Icon Decoration */}
-            <div className="absolute bottom-10 right-10 opacity-[0.03] pointer-events-none">
-              <Brain className="w-80 h-80 text-blue-600" />
-            </div>
-
-            <div className="max-w-4xl mx-auto relative z-10">
-
-              <div className="bg-white rounded-lg overflow-hidden border-2 border-slate-200 shadow-lg">
+          <section id="diagnosis" className="py-24 px-6 relative bg-white">
+            <div className="max-w-4xl mx-auto">
+              
+              <div className="bg-white rounded-3xl overflow-hidden border border-slate-200 shadow-2xl">
                 {/* Interface Header */}
-                <div className="bg-gradient-to-r from-blue-600 to-blue-700 p-6 border-b-2 border-blue-700 relative overflow-hidden">
-                  {/* Animated Pulse Effect on Activity Icon */}
-                  <div className="absolute top-1/2 right-6 -translate-y-1/2 opacity-10">
-                    <Activity className="w-20 h-20 text-white animate-pulse" />
-                  </div>
-
-                  <div className="relative z-10">
-                    <h2 className="text-2xl font-bold flex items-center gap-2 text-white">
-                      <Activity className="w-6 h-6" />
+                <div className="bg-slate-50 p-8 border-b border-slate-200 flex items-center justify-between">
+                  <div>
+                    <h2 className="text-2xl font-bold flex items-center gap-2 text-slate-900">
+                      <Activity className="w-6 h-6 text-cyan-600" />
                       Diagnostic Interface
                     </h2>
-                    <p className="text-blue-100 text-sm mt-1">3D Volumetric Analysis System</p>
+                    <p className="text-slate-500 text-sm mt-1">Ready for 3D Volumetric Analysis</p>
+                  </div>
+                  <div className="flex gap-2">
+                      <div className="w-3 h-3 rounded-full bg-rose-400/30 border border-rose-400"></div>
+                      <div className="w-3 h-3 rounded-full bg-amber-400/30 border border-amber-400"></div>
+                      <div className="w-3 h-3 rounded-full bg-emerald-400/30 border border-emerald-400"></div>
                   </div>
                 </div>
     
@@ -576,9 +505,9 @@ export default function Home() {
                           setResultA(null);
                           setResultB(null);
                         }}
-                        className={`px-6 py-3 rounded font-bold transition-all ${
+                        className={`px-6 py-3 rounded-xl font-bold transition-all ${
                           !batchMode && !compareMode
-                            ? 'bg-blue-600 text-white shadow-md'
+                            ? 'bg-cyan-600 text-white shadow-lg'
                             : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
                         }`}
                       >
@@ -593,9 +522,9 @@ export default function Home() {
                           setFiles([]);
                           setBatchResults([]);
                         }}
-                        className={`px-6 py-3 rounded font-bold transition-all ${
+                        className={`px-6 py-3 rounded-xl font-bold transition-all ${
                           compareMode
-                            ? 'bg-blue-600 text-white shadow-md'
+                            ? 'bg-cyan-600 text-white shadow-lg'
                             : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
                         }`}
                       >
@@ -612,9 +541,9 @@ export default function Home() {
                           setResultA(null);
                           setResultB(null);
                         }}
-                        className={`px-6 py-3 rounded font-bold transition-all ${
+                        className={`px-6 py-3 rounded-xl font-bold transition-all ${
                           batchMode
-                            ? 'bg-blue-600 text-white shadow-md'
+                            ? 'bg-cyan-600 text-white shadow-lg'
                             : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
                         }`}
                       >
@@ -624,8 +553,9 @@ export default function Home() {
 
                     {/* File Upload Zone */}
                     {!batchMode && !compareMode ? (
-                      <div className={`border-2 border-dashed rounded-lg p-12 text-center transition-all duration-300 group ${
-                        file ? 'border-blue-500 bg-blue-50' : 'border-slate-300 hover:border-blue-400 hover:bg-slate-50'
+                      // Single file upload
+                      <div className={`border-2 border-dashed rounded-2xl p-12 text-center transition-all duration-300 group ${
+                        file ? 'border-cyan-500 bg-cyan-50' : 'border-slate-300 hover:border-cyan-400 hover:bg-slate-50'
                       }`}>
                         <input
                           type="file"
@@ -637,17 +567,17 @@ export default function Home() {
                         <label htmlFor="file-upload" className="cursor-pointer flex flex-col items-center gap-4">
                           {file ? (
                             <>
-                              <div className="w-16 h-16 rounded bg-blue-100 flex items-center justify-center text-blue-600 border border-blue-200">
+                              <div className="w-16 h-16 rounded-full bg-cyan-100 flex items-center justify-center text-cyan-600 border border-cyan-200">
                                 <CheckCircle2 className="w-8 h-8" />
                               </div>
                               <div>
                                 <p className="text-xl font-bold text-slate-900 break-all">{file.name}</p>
-                                <p className="text-sm text-blue-600 mt-1 font-semibold">File loaded successfully</p>
+                                <p className="text-sm text-cyan-600 mt-1 font-semibold">File loaded successfully</p>
                               </div>
                             </>
                           ) : (
                             <>
-                              <div className="w-16 h-16 rounded bg-slate-100 group-hover:bg-slate-200 flex items-center justify-center text-slate-400 transition-colors border border-slate-200">
+                              <div className="w-16 h-16 rounded-full bg-slate-100 group-hover:bg-slate-200 flex items-center justify-center text-slate-400 transition-colors border border-slate-200">
                                 <Upload className="w-8 h-8" />
                               </div>
                               <div>
@@ -659,10 +589,11 @@ export default function Home() {
                         </label>
                       </div>
                     ) : compareMode ? (
+                      // Compare mode - two file uploads side by side
                       <div className="grid md:grid-cols-2 gap-4">
                         {/* File A Upload */}
-                        <div className={`border-2 border-dashed rounded-lg p-8 text-center transition-all duration-300 group ${
-                          fileA ? 'border-blue-600 bg-blue-50' : 'border-slate-300 hover:border-blue-400 hover:bg-slate-50'
+                        <div className={`border-2 border-dashed rounded-2xl p-8 text-center transition-all duration-300 group ${
+                          fileA ? 'border-blue-500 bg-blue-50' : 'border-slate-300 hover:border-blue-400 hover:bg-slate-50'
                         }`}>
                           <input
                             type="file"
@@ -674,7 +605,7 @@ export default function Home() {
                           <label htmlFor="file-upload-a" className="cursor-pointer flex flex-col items-center gap-3">
                             {fileA ? (
                               <>
-                                <div className="w-12 h-12 rounded bg-blue-100 flex items-center justify-center text-blue-600 border border-blue-200">
+                                <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 border border-blue-200">
                                   <CheckCircle2 className="w-6 h-6" />
                                 </div>
                                 <div>
@@ -684,7 +615,7 @@ export default function Home() {
                               </>
                             ) : (
                               <>
-                                <div className="w-12 h-12 rounded bg-slate-100 group-hover:bg-slate-200 flex items-center justify-center text-slate-400 transition-colors border border-slate-200">
+                                <div className="w-12 h-12 rounded-full bg-slate-100 group-hover:bg-slate-200 flex items-center justify-center text-slate-400 transition-colors border border-slate-200">
                                   <Upload className="w-6 h-6" />
                                 </div>
                                 <div>
@@ -697,7 +628,7 @@ export default function Home() {
                         </div>
 
                         {/* File B Upload */}
-                        <div className={`border-2 border-dashed rounded-lg p-8 text-center transition-all duration-300 group ${
+                        <div className={`border-2 border-dashed rounded-2xl p-8 text-center transition-all duration-300 group ${
                           fileB ? 'border-purple-500 bg-purple-50' : 'border-slate-300 hover:border-purple-400 hover:bg-slate-50'
                         }`}>
                           <input
@@ -710,7 +641,7 @@ export default function Home() {
                           <label htmlFor="file-upload-b" className="cursor-pointer flex flex-col items-center gap-3">
                             {fileB ? (
                               <>
-                                <div className="w-12 h-12 rounded bg-purple-100 flex items-center justify-center text-purple-600 border border-purple-200">
+                                <div className="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 border border-purple-200">
                                   <CheckCircle2 className="w-6 h-6" />
                                 </div>
                                 <div>
@@ -720,7 +651,7 @@ export default function Home() {
                               </>
                             ) : (
                               <>
-                                <div className="w-12 h-12 rounded bg-slate-100 group-hover:bg-slate-200 flex items-center justify-center text-slate-400 transition-colors border border-slate-200">
+                                <div className="w-12 h-12 rounded-full bg-slate-100 group-hover:bg-slate-200 flex items-center justify-center text-slate-400 transition-colors border border-slate-200">
                                   <Upload className="w-6 h-6" />
                                 </div>
                                 <div>
@@ -733,8 +664,9 @@ export default function Home() {
                         </div>
                       </div>
                     ) : batchMode ? (
-                      <div className={`border-2 border-dashed rounded-lg p-12 text-center transition-all duration-300 group ${
-                        files.length > 0 ? 'border-blue-500 bg-blue-50' : 'border-slate-300 hover:border-blue-400 hover:bg-slate-50'
+                      // Batch file upload
+                      <div className={`border-2 border-dashed rounded-2xl p-12 text-center transition-all duration-300 group ${
+                        files.length > 0 ? 'border-cyan-500 bg-cyan-50' : 'border-slate-300 hover:border-cyan-400 hover:bg-slate-50'
                       }`}>
                         <input
                           type="file"
@@ -747,17 +679,17 @@ export default function Home() {
                         <label htmlFor="batch-file-upload" className="cursor-pointer flex flex-col items-center gap-4">
                           {files.length > 0 ? (
                             <>
-                              <div className="w-16 h-16 rounded bg-blue-100 flex items-center justify-center text-blue-600 border border-blue-200">
+                              <div className="w-16 h-16 rounded-full bg-cyan-100 flex items-center justify-center text-cyan-600 border border-cyan-200">
                                 <CheckCircle2 className="w-8 h-8" />
                               </div>
                               <div>
                                 <p className="text-xl font-bold text-slate-900">{files.length} files selected</p>
-                                <p className="text-sm text-blue-600 mt-1 font-semibold">Ready for batch processing</p>
+                                <p className="text-sm text-cyan-600 mt-1 font-semibold">Ready for batch processing</p>
                               </div>
                             </>
                           ) : (
                             <>
-                              <div className="w-16 h-16 rounded bg-slate-100 group-hover:bg-slate-200 flex items-center justify-center text-slate-400 transition-colors border border-slate-200">
+                              <div className="w-16 h-16 rounded-full bg-slate-100 group-hover:bg-slate-200 flex items-center justify-center text-slate-400 transition-colors border border-slate-200">
                                 <Upload className="w-8 h-8" />
                               </div>
                               <div>
@@ -778,10 +710,10 @@ export default function Home() {
                           ? (!fileA || !fileB || loading)
                           : (batchMode ? (files.length === 0 || loading) : (!file || loading))
                       }
-                      className={`w-full py-5 rounded font-bold text-xl transition-all ${
+                      className={`w-full py-5 rounded-xl font-bold text-xl transition-all ${
                         (compareMode ? (!fileA || !fileB) : (batchMode ? files.length === 0 : !file))
                           ? 'bg-slate-100 text-slate-400 cursor-not-allowed border border-slate-200'
-                          : 'bg-blue-600 hover:bg-blue-700 hover:shadow-lg text-white'
+                          : 'bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 hover:shadow-xl hover:shadow-cyan-500/30 text-white'
                       }`}
                     >
                       {loading ? (
@@ -859,7 +791,7 @@ export default function Home() {
 
                         <div className="grid md:grid-cols-2 gap-6">
                           {/* Scan A Results */}
-                          <div className="space-y-4 p-6 bg-blue-50 rounded-lg border-2 border-blue-200">
+                          <div className="space-y-4 p-6 bg-blue-50 rounded-2xl border-2 border-blue-200">
                             <div className="text-center mb-4">
                               <p className="text-xs font-bold text-blue-600 uppercase tracking-wider mb-1">Scan A</p>
                               <p className="text-sm text-slate-600 font-mono truncate">{fileA?.name}</p>
@@ -917,7 +849,7 @@ export default function Home() {
                           </div>
 
                           {/* Scan B Results */}
-                          <div className="space-y-4 p-6 bg-purple-50 rounded-lg border-2 border-purple-200">
+                          <div className="space-y-4 p-6 bg-purple-50 rounded-2xl border-2 border-purple-200">
                             <div className="text-center mb-4">
                               <p className="text-xs font-bold text-purple-600 uppercase tracking-wider mb-1">Scan B</p>
                               <p className="text-sm text-slate-600 font-mono truncate">{fileB?.name}</p>
@@ -977,7 +909,7 @@ export default function Home() {
 
                         {/* Single explanation section at bottom */}
                         <div className="space-y-4">
-                          <div className="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                          <div className="bg-slate-50 p-4 rounded-xl border border-slate-200">
                             <p className="text-sm font-bold text-slate-700 mb-2">Understanding the Views</p>
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs text-slate-600">
                               <div>
@@ -999,7 +931,7 @@ export default function Home() {
                             </div>
                           </div>
 
-                          <div className="bg-white p-4 rounded-lg border border-slate-200">
+                          <div className="bg-white p-4 rounded-xl border border-slate-200">
                             <p className="text-sm font-bold text-slate-700 mb-3">Aneurysm Detection Heatmap</p>
                             <div className="flex items-center gap-4 mb-3">
                               <div className="flex items-center gap-2">
@@ -1018,7 +950,7 @@ export default function Home() {
                             </div>
                           </div>
 
-                          <div className="bg-blue-50 p-4 rounded-lg border border-blue-100">
+                          <div className="bg-blue-50 p-4 rounded-xl border border-blue-100">
                             <p className="text-sm font-bold text-blue-900 mb-2">Viewer Controls</p>
                             <ul className="text-xs text-blue-800 space-y-1">
                               <li>• <strong>Click:</strong> Move crosshair</li>
@@ -1047,7 +979,7 @@ export default function Home() {
                                 onClick={() => {
                                   setSelectedResult(null);
                                 }}
-                                className="px-4 py-2 bg-blue-600 text-white rounded text-sm font-bold hover:bg-blue-700 transition-all flex items-center gap-2"
+                                className="px-4 py-2 bg-cyan-600 text-white rounded-lg text-sm font-bold hover:bg-cyan-500 transition-all flex items-center gap-2"
                               >
                                 Compare Selected ({selectedForCompare.length})
                               </button>
@@ -1058,7 +990,7 @@ export default function Home() {
                                 const normalFiles = batchResults.filter(r => r.predicted_class === 'Normal');
                                 alert(`Aneurysm: ${aneurysmFiles.length} files\nNormal: ${normalFiles.length} files\n\nDownload feature coming soon!`);
                               }}
-                              className="px-4 py-2 bg-slate-700 text-white rounded text-sm font-bold hover:bg-slate-800 transition-all flex items-center gap-2"
+                              className="px-4 py-2 bg-slate-900 text-white rounded-lg text-sm font-bold hover:bg-slate-800 transition-all flex items-center gap-2"
                             >
                               <Download className="w-4 h-4" />
                               Export Results
@@ -1068,15 +1000,15 @@ export default function Home() {
 
                         {/* Selection Instructions */}
                         {selectedForCompare.length > 0 && (
-                          <div className="flex items-center justify-center gap-2 text-sm bg-blue-50 p-3 rounded border border-blue-200">
-                            <span className="text-blue-700 font-semibold">
+                          <div className="flex items-center justify-center gap-2 text-sm bg-cyan-50 p-3 rounded-lg border border-cyan-200">
+                            <span className="text-cyan-700 font-semibold">
                               {selectedForCompare.length === 1
                                 ? 'Select one more scan to compare'
                                 : 'Click "Compare Selected" to view side-by-side'}
                             </span>
                             <button
                               onClick={() => setSelectedForCompare([])}
-                              className="text-blue-600 hover:text-blue-800 underline font-bold"
+                              className="text-cyan-600 hover:text-cyan-800 underline font-bold"
                             >
                               Clear Selection
                             </button>
@@ -1112,8 +1044,10 @@ export default function Home() {
                                 ? 'border-rose-400 bg-rose-50'
                                 : 'border-emerald-400 bg-emerald-50';
                             }
+
+                            // Add selection styling
                             if (isSelected) {
-                              colorClass = 'border-blue-600 bg-blue-100 ring-2 ring-blue-200';
+                              colorClass = 'border-cyan-600 bg-cyan-100 ring-2 ring-cyan-200';
                             }
 
                             return (
@@ -1145,8 +1079,8 @@ export default function Home() {
                                   >
                                     <div className={`w-4 h-4 rounded border flex items-center justify-center transition-all ${
                                       isSelected
-                                        ? 'bg-blue-600 border-blue-600'
-                                        : 'bg-white border-slate-300 hover:border-blue-400'
+                                        ? 'bg-cyan-600 border-cyan-600'
+                                        : 'bg-white border-slate-300 hover:border-cyan-400'
                                     }`}>
                                       {isSelected && <CheckCircle2 className="w-3 h-3 text-white" />}
                                     </div>
@@ -1175,16 +1109,16 @@ export default function Home() {
                     {/* Comparison Modal for Selected Batch Scans */}
                     {selectedForCompare.length === 2 && !selectedResult && (
                       <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => setSelectedForCompare([])}>
-                        <div className="bg-white rounded-lg max-w-7xl w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+                        <div className="bg-white rounded-3xl max-w-7xl w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
                           {/* Modal Header */}
-                          <div className="sticky top-0 bg-white border-b border-slate-200 p-6 rounded-t-lg flex items-center justify-between z-10">
+                          <div className="sticky top-0 bg-white border-b border-slate-200 p-6 rounded-t-3xl flex items-center justify-between z-10">
                             <div>
                               <h3 className="text-2xl font-bold text-slate-900">Scan Comparison</h3>
                               <p className="text-sm text-slate-500 mt-1">Side-by-Side Analysis</p>
                             </div>
                             <button
                               onClick={() => setSelectedForCompare([])}
-                              className="w-10 h-10 rounded bg-slate-100 hover:bg-slate-200 flex items-center justify-center transition-colors"
+                              className="w-10 h-10 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center transition-colors"
                             >
                               <span className="text-2xl text-slate-600">×</span>
                             </button>
@@ -1194,7 +1128,7 @@ export default function Home() {
                           <div className="p-6">
                             <div className="grid md:grid-cols-2 gap-6">
                               {/* First Selected Scan */}
-                              <div className="space-y-4 p-6 bg-blue-50 rounded-lg border-2 border-blue-200">
+                              <div className="space-y-4 p-6 bg-blue-50 rounded-2xl border-2 border-blue-200">
                                 <div className="text-center mb-4">
                                   <p className="text-xs font-bold text-blue-600 uppercase tracking-wider mb-1">Scan 1</p>
                                   <p className="text-sm text-slate-600 font-mono truncate">{selectedForCompare[0].filename}</p>
@@ -1250,7 +1184,7 @@ export default function Home() {
                               </div>
 
                               {/* Second Selected Scan */}
-                              <div className="space-y-4 p-6 bg-purple-50 rounded-lg border-2 border-purple-200">
+                              <div className="space-y-4 p-6 bg-purple-50 rounded-2xl border-2 border-purple-200">
                                 <div className="text-center mb-4">
                                   <p className="text-xs font-bold text-purple-600 uppercase tracking-wider mb-1">Scan 2</p>
                                   <p className="text-sm text-slate-600 font-mono truncate">{selectedForCompare[1].filename}</p>
@@ -1308,7 +1242,7 @@ export default function Home() {
 
                             {/* Single explanation section at bottom */}
                             <div className="space-y-4 mt-6">
-                              <div className="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                              <div className="bg-slate-50 p-4 rounded-xl border border-slate-200">
                                 <p className="text-sm font-bold text-slate-700 mb-2">Understanding the Views</p>
                                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs text-slate-600">
                                   <div>
@@ -1330,7 +1264,7 @@ export default function Home() {
                                 </div>
                               </div>
 
-                              <div className="bg-white p-4 rounded-lg border border-slate-200">
+                              <div className="bg-white p-4 rounded-xl border border-slate-200">
                                 <p className="text-sm font-bold text-slate-700 mb-3">Aneurysm Detection Heatmap</p>
                                 <div className="flex items-center gap-4 mb-3">
                                   <div className="flex items-center gap-2">
@@ -1349,7 +1283,7 @@ export default function Home() {
                                 </div>
                               </div>
 
-                              <div className="bg-blue-50 p-4 rounded-lg border border-blue-100">
+                              <div className="bg-blue-50 p-4 rounded-xl border border-blue-100">
                                 <p className="text-sm font-bold text-blue-900 mb-2">Viewer Controls</p>
                                 <ul className="text-xs text-blue-800 space-y-1">
                                   <li>• <strong>Click:</strong> Move crosshair</li>
@@ -1366,16 +1300,16 @@ export default function Home() {
                     {/* Modal for Batch Result Detail View */}
                     {selectedResult && (
                       <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => setSelectedResult(null)}>
-                        <div className="bg-white rounded-lg max-w-5xl w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+                        <div className="bg-white rounded-3xl max-w-5xl w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
                           {/* Modal Header */}
-                          <div className="sticky top-0 bg-white border-b border-slate-200 p-6 rounded-t-lg flex items-center justify-between z-10">
+                          <div className="sticky top-0 bg-white border-b border-slate-200 p-6 rounded-t-3xl flex items-center justify-between z-10">
                             <div>
                               <h3 className="text-2xl font-bold text-slate-900">{selectedResult.filename}</h3>
                               <p className="text-sm text-slate-500 mt-1">Detailed Analysis View</p>
                             </div>
                             <button
                               onClick={() => setSelectedResult(null)}
-                              className="w-10 h-10 rounded bg-slate-100 hover:bg-slate-200 flex items-center justify-center transition-colors"
+                              className="w-10 h-10 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center transition-colors"
                             >
                               <span className="text-2xl text-slate-600">×</span>
                             </button>
@@ -1447,17 +1381,8 @@ export default function Home() {
           </section>
     
           {/* Footer */}
-          <footer className="py-12 text-center text-slate-500 text-sm border-t border-slate-200 bg-slate-50 relative overflow-hidden">
-            {/* Subtle Medical Grid */}
-            <div
-              className="absolute inset-0 opacity-[0.015]"
-              style={{
-                backgroundImage: `linear-gradient(#1e40af 1px, transparent 1px), linear-gradient(90deg, #1e40af 1px, transparent 1px)`,
-                backgroundSize: '40px 40px'
-              }}
-            ></div>
-
-            <p className="relative z-10">© 2025 NeuroScan Research. Powered by MedMNIST & PyTorch.</p>
+          <footer className="py-12 text-center text-slate-500 text-sm border-t border-slate-200 bg-slate-50">
+            <p>© 2025 NeuroScan Research. Powered by MedMNIST & PyTorch.</p>
           </footer>
         </main>
       );
