@@ -1,6 +1,5 @@
 ---
 title: Neuroscan Backend
-emoji: 🌍
 colorFrom: red
 colorTo: green
 sdk: gradio

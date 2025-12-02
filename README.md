@@ -1,19 +1,21 @@
 # NeuroScan: AI-Powered Brain Aneurysm Detection System
 
-**NeuroScan** is a full-stack medical AI application for detecting brain vessel abnormalities (aneurysms) from MRA scans. This monorepo contains the complete system: frontend interface, inference backend, and model training code.
+**NeuroScan** is a full-stack medical AI application for detecting brain vessel abnormalities (aneurysms) from MRA scans. This repo contains the complete system: frontend interface, inference backend, and model training code.
 
-## 🎯 Project Overview
+## Project Overview
 
-NeuroScan serves as an **AI-powered triage tool** to assist radiologists in detecting potentially life-threatening brain aneurysms. The system:
+**Problem Statement:** To what extent can AI detect abnormal vessel patterns in brain MRA scans compared to manual radiologist review?
 
-- **Flags potential aneurysms** for clinical review (does not replace radiologist judgment)
-- **Reduces diagnostic burden** by pre-screening scans during high-volume shifts
-- **Works with lower-resolution data** (64×64×64 voxels) to support under-resourced healthcare settings
-- **Achieves 83.72% sensitivity** on the validation set, with room for improvement through higher-resolution training data
+NeuroScan serves as an AI-powered triage tool to assist radiologists in detecting potentially life-threatening brain aneurysms. The system:
 
-## 📁 Repository Structure
+- Flags potential aneurysms for clinical review (does not replace radiologist judgment)
+- Reduces diagnostic burden by pre-screening scans during high-volume shifts
+- Works with lower-resolution data (64×64×64 voxels) to support under-resourced healthcare settings
+- Achieves 83.72% sensitivity on the validation set, approaching the ~95% sensitivity reported in clinical MRA studies
 
-This is a monorepo containing three main components:
+## Repository Structure
+
+This repo contains three main components:
 
 ```
 Neuroscan-Frontend/
@@ -25,7 +27,7 @@ Neuroscan-Frontend/
 
 ---
 
-## 🖥️ Frontend (Next.js)
+## Frontend (Next.js)
 
 ### Overview
 Professional medical-themed interface for uploading brain MRA scans (NIfTI format), viewing predictions, and exploring model performance.
@@ -59,7 +61,7 @@ npm run dev  # Runs on http://localhost:3000
 
 ---
 
-## ⚙️ Backend (Gradio + PyTorch)
+## Backend (Gradio + PyTorch)
 
 ### Overview
 Lightweight Python inference server that loads the trained 3D ResNet model and processes uploaded NIfTI files.
@@ -93,7 +95,7 @@ python app.py  # Runs on http://localhost:7860
 
 ---
 
-## 🧠 Model Training & Research
+## Model Training & Research
 
 ### Overview
 Research code for training and evaluating the 3D CNN on the VesselMNIST3D dataset. This work was completed as part of the **AI4ALL Ignite accelerator**.
@@ -137,7 +139,7 @@ cd model
 
 ---
 
-## 🚀 Quick Start (Full Stack)
+## Quick Start (Full Stack)
 
 ### 1. Start the Backend
 ```bash
@@ -162,7 +164,7 @@ npm run dev  # Runs on http://localhost:3000
 
 ---
 
-## 📊 Current Performance
+## Current Performance
 
 | Metric | Value | Clinical MRA Studies |
 |--------|-------|---------------------|
@@ -180,50 +182,52 @@ npm run dev  # Runs on http://localhost:3000
 
 ---
 
-## 🔬 Research Background
+## Research Background
 
 ### Problem Statement
-Stroke prevention and early detection of vascular abnormalities rely heavily on accurate interpretation of brain MRA scans. Radiologists review these images manually—a process that is:
-- **Time-consuming** and vulnerable to fatigue
-- **Affected by high patient volumes** and long shifts
-- **Subject to human error**, especially for subtle findings
+To what extent can AI detect abnormal vessel patterns in brain MRA scans compared to manual radiologist review?
+
+Stroke prevention and early detection of vascular abnormalities rely heavily on accurate interpretation of brain MRA scans. Radiologists review these images manually, a process that is:
+- Time-consuming and vulnerable to fatigue
+- Affected by high patient volumes and long shifts
+- Subject to human error, especially for subtle findings
 
 This project explores whether AI can provide meaningful assistance in this critical diagnostic task.
 
 ### Clinical Context
-- **6.5 million** people in the US have unruptured brain aneurysms
-- **30,000** ruptures occur annually
-- **50%** mortality rate once ruptured
-- **Radiologist fatigue** increases errors by 226% at high shift volumes (67-90 vs ≤19 studies)
-- **Sub-Saharan Africa** has <1 radiologist per 500,000 people
+- 6.5 million people in the US have unruptured brain aneurysms
+- 30,000 ruptures occur annually
+- 50% mortality rate once ruptured
+- Radiologist fatigue increases errors by 226% at high shift volumes (67-90 vs ≤19 studies)
+- Sub-Saharan Africa has <1 radiologist per 500,000 people
 
 ---
 
-## 👥 Authors
+## Authors
 
 This project was developed by:
-- **Folabomi Longe**
-- **Oluwatodimu Adegoke**
-- **Ousman Bah**
-- **Karen Maza Delgado**
-- **Maria Garcia**
-- **Chimin Liu**
+- Folabomi Longe
+- Oluwatodimu Adegoke
+- Ousman Bah
+- Karen Maza Delgado
+- Maria Garcia
+- Chimin Liu
 
-*Completed as part of the AI4ALL Ignite accelerator program, investigating AI's capability to detect brain vessel abnormalities compared to radiologist review.*
+Completed as part of the AI4ALL Ignite accelerator program, investigating AI's capability to detect brain vessel abnormalities compared to radiologist review.
 
 ---
 
-## 📜 License
+## License
 
 This project uses the VesselMNIST3D dataset from MedMNIST, which is based on the IntrA dataset (Xi Yang et al., CVPR 2020).
 
-## ⚠️ Disclaimer
+## Disclaimer
 
-**This tool is for research and experimental purposes only.** All predictions must be verified by qualified medical professionals. NeuroScan is designed to **complement, not replace**, clinical judgment.
+This tool is for research and experimental purposes only. All predictions must be verified by qualified medical professionals. NeuroScan is designed to complement, not replace, clinical judgment.
 
 ---
 
-## 📚 References
+## References
 
 - MedMNIST v2: https://medmnist.com/
 - IntrA Dataset: Xi Yang et al., "IntrA: 3D Intracranial Aneurysm Dataset for Deep Learning", CVPR 2020
