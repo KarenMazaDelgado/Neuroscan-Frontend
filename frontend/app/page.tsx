@@ -435,9 +435,9 @@ export default function Home() {
                     </p>
                   </div>
 
-                  {/* Complete Test Set */}
+                  {/* Example Test Set */}
                   <div className="space-y-3">
-                    <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Complete Test Set</p>
+                    <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Example Test Set</p>
                     <a
                       href="/test_samples_20.zip"
                       download
@@ -576,7 +576,7 @@ export default function Home() {
                               </div>
                               <div>
                                 <p className="text-xl font-bold text-slate-900">Drop NIfTI file or click to browse</p>
-                                <p className="text-base text-slate-500 mt-2 font-medium">Supports .nii.gz 3D volumes</p>
+                                <p className="text-base text-slate-500 mt-2 font-medium">Supports .nii or .nii.gz files</p>
                               </div>
                             </>
                           )}
