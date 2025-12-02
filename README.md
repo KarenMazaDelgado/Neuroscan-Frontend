@@ -2,6 +2,8 @@
 
 **NeuroScan** is a full-stack medical AI application for detecting brain vessel abnormalities (aneurysms) from MRA scans. This repo contains the complete system: frontend interface, inference backend, and model training code.
 
+https://neuroscan-frontend.vercel.app/
+
 ## Project Overview
 
 **Problem Statement:** To what extent can AI detect abnormal vessel patterns in brain MRA scans compared to manual radiologist review?
