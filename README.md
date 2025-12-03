@@ -695,7 +695,7 @@ This project was developed by:
 
 - **Folabomi Longe** - [GitHub](https://github.com/FolabomiLonge) | [LinkedIn](https://www.linkedin.com/in/folabomi-longe/)
 - **Ousman Bah** - [GitHub](https://github.com/ousmanbah10) | [LinkedIn](https://linkedin.com/in/ousman-bah)
-- **Karen Maza Delgado** - [GitHub] (https://github.com/KarenMazaDelgado/) | [LinkedIn](https://www.linkedin.com/in/karenmaza/)
+- **Karen Maza Delgado** - [GitHub](https://github.com/KarenMazaDelgado/) | [LinkedIn](https://www.linkedin.com/in/karenmaza/)
 - **Chimin Liu** - [GitHub](https://github.com/cooleschimo) | [LinkedIn](https://linkedin.com/in/chimin-liu)
 - **Maria Garcia** - 
 
