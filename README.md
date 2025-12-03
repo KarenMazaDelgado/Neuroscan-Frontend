@@ -693,12 +693,11 @@ Review       Queue
 
 This project was developed by:
 
-- **Folabomi Longe** - [GitHub](https://github.com/folabomi) | [LinkedIn](https://linkedin.com/in/folabomi)
-- **Oluwatodimu Adegoke** - [GitHub](https://github.com/todimu) | [LinkedIn](https://linkedin.com/in/todimu)
-- **Ousman Bah** - [GitHub](https://github.com/ousman) | [LinkedIn](https://linkedin.com/in/ousman)
-- **Karen Maza Delgado** - [GitHub](https://github.com/karen) | [LinkedIn](https://linkedin.com/in/karen)
-- **Maria Garcia** - [GitHub](https://github.com/maria) | [LinkedIn](https://linkedin.com/in/maria)
-- **Chimin Liu** - [GitHub](https://github.com/chimin) | [LinkedIn](https://linkedin.com/in/chimin)
+- **Folabomi Longe** - [GitHub](https://github.com/FolabomiLonge) | [LinkedIn](https://linkedin.com/in/folabomi)
+- **Ousman Bah** - [GitHub](https://github.com/ousmanbah10) | [LinkedIn](https://linkedin.com/in/ousman-bah)
+- **Karen Maza Delgado** - [GitHub] (https://github.com/KarenMazaDelgado/) | [LinkedIn](https://www.linkedin.com/in/karenmaza/)
+- **Maria Garcia** - 
+- **Chimin Liu** - [GitHub](https://github.com/cooleschimo) | [LinkedIn](https://linkedin.com/in/chimin-liu)
 
 *This project was completed in collaboration with the team as part of the **[AI4ALL Ignite](https://ai-4-all.org/)** accelerator program, investigating AI's capability to detect brain vessel abnormalities compared to radiologist review.*
 
